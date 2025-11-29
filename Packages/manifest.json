@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "com.unity.adaptiveperformance": "5.1.6",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.cinemachine": "2.10.5",
     "com.unity.collab-proxy": "2.10.1",

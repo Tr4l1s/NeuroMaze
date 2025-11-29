@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: iPhone Settings
   m_EditorClassIdentifier: 
   m_LoaderManagerInstance: {fileID: 8157170350644829552}
-  m_InitManagerOnStart: 1
+  m_InitManagerOnStart: 0
 --- !u!114 &-7194271370402897645
 MonoBehaviour:
   m_ObjectHideFlags: 2
