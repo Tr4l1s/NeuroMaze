@@ -4,10 +4,10 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     [Header("Baðlantýlar")]
-    public PulseBridge pulseBridge;          // Swift köprüsü
-    public EnemyController enemy;            // ÞÝMDÝ EnemyController kullanýyoruz
-    public TextMeshProUGUI currentBpmText;   // UI'da anlýk BPM
-    public TextMeshProUGUI weeklyBpmText;    // UI'da haftalýk ortalama
+    public PulseBridge pulseBridge;
+    public EnemyController enemy;
+    public TextMeshProUGUI currentBpmText;
+    public TextMeshProUGUI weeklyBpmText;
     public TextMeshProUGUI measureInfoText;
 
     public EnvironmentDarkener envDarkener;
