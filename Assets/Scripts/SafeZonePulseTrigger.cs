@@ -8,7 +8,7 @@ public class SafeZonePulseTrigger : MonoBehaviour
     public float cooldownSeconds = 40f;
     private bool isOnCooldown = false;
 
-    public GameObject safeZonePanel;
+    public QuizManager quizManager;
 
     public MonoBehaviour[] scriptsToDisable;
 
@@ -44,8 +44,11 @@ public class SafeZonePulseTrigger : MonoBehaviour
         }
 
         if (pulseBridge != null)
+
         {
-            Debug.Log("SafeZone: Oyuncu girdi, nabýz ölçümü baþlatýlýyor.");
+
+
+
 
             if (gameManager != null)
             {
@@ -65,14 +68,14 @@ public class SafeZonePulseTrigger : MonoBehaviour
         isOnCooldown = false;
     }
 
-    private void OpenSafeZonePanel()
+    public void OpenSafeZonePanel()
     {
         if (panelOpen) return;
         panelOpen = true;
 
-        if (safeZonePanel != null)
+        if (quizManager != null)
         {
-            safeZonePanel.SetActive(true);
+            quizManager.StartQuiz();
         }
 
         if (scriptsToDisable != null)
@@ -90,9 +93,18 @@ public class SafeZonePulseTrigger : MonoBehaviour
         if (!panelOpen) return;
         panelOpen = false;
 
-        if (safeZonePanel != null)
+        int correctCount = 0;
+
+        if (quizManager != null)
         {
-            safeZonePanel.SetActive(false);
+            correctCount = quizManager.correctAnswerCount;
+            quizManager.EndQuiz();
+        }
+
+        if (gameManager != null)
+        {
+            gameManager.OnMeasurementFinished();
+            gameManager.OnSafeZoneFinishedWithQuiz(correctCount);
         }
 
         if (scriptsToDisable != null)

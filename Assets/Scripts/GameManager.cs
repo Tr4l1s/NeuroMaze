@@ -78,4 +78,9 @@ public class GameManager : MonoBehaviour
     }
 
 
+    public void OnSafeZoneFinishedWithQuiz(int correctAnswers)
+    {
+        Debug.Log("SafeZone bitti, doðru sayýsý: " + correctAnswers);
+
+    }
 }

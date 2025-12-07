@@ -21,7 +21,7 @@ public class EnemyController : MonoBehaviour
     [Header("Nabza Göre Hýz Ayarlarý")]
     public float normalSpeed = 3.5f;
     public float highStressSpeed = 6f;
-    public int stressThresholdBpm = 100;
+    public int stressThresholdBpm = 70;
 
     private float timer;
     private bool isStopped = false;

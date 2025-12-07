@@ -6675,7 +6675,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0.84276724, g: 0.6809374, b: 0.3153751, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_HighlightedColor: {r: 0.84276724, g: 0, b: 0, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
@@ -6696,7 +6696,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 853663558}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1784253505}
+        m_TargetAssemblyTypeName: QuizManager, Assembly-CSharp
+        m_MethodName: OnAnswerClicked
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &853663558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8962,8 +8974,8 @@ MonoBehaviour:
   m_text: "Bir \xF6r\xFCmce\u011Fin 8 baca\u011F\u0131 varsa, 3 \xF6r\xFCmce\u011Fin
     toplam ka\xE7 baca\u011F\u0131 vard\u0131r."
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
-  m_sharedMaterial: {fileID: 2147374, guid: 0161d805a3764c089bef00bfe00793f5, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
+  m_sharedMaterial: {fileID: 2164040, guid: 5302535af1044152a457ed104f1f4b91, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -8995,10 +9007,10 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 1
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
-  m_wordSpacing: 0
+  m_wordSpacing: 10
   m_lineSpacing: 0
   m_lineSpacingMax: 0
   m_paragraphSpacing: 0
@@ -10221,10 +10233,10 @@ MonoBehaviour:
   pulseBridge: {fileID: 392811660}
   gameManager: {fileID: 392811661}
   cooldownSeconds: 40
-  safeZonePanel: {fileID: 0}
+  quizManager: {fileID: 1784253505}
   scriptsToDisable: []
   panelDurationSeconds: 30
-  monster: {fileID: 0}
+  monster: {fileID: 811558453}
   monsterRespawnDelaySeconds: 30
 --- !u!1 &1165731469
 GameObject:
@@ -10295,7 +10307,7 @@ MonoBehaviour:
   pulseBridge: {fileID: 392811660}
   gameManager: {fileID: 392811661}
   cooldownSeconds: 40
-  safeZonePanel: {fileID: 1579722733}
+  quizManager: {fileID: 1784253505}
   scriptsToDisable:
   - {fileID: 1839759047}
   panelDurationSeconds: 30
@@ -12275,7 +12287,7 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.3137255, g: 0.43683952, b: 0.84313726, a: 1}
+    m_NormalColor: {r: 0.3164431, g: 0.4286374, b: 0.8050314, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
     m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -12297,7 +12309,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1364510209}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1784253505}
+        m_TargetAssemblyTypeName: QuizManager, Assembly-CSharp
+        m_MethodName: OnAnswerClicked
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1364510209
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12573,10 +12597,10 @@ MonoBehaviour:
   pulseBridge: {fileID: 392811660}
   gameManager: {fileID: 392811661}
   cooldownSeconds: 40
-  safeZonePanel: {fileID: 0}
+  quizManager: {fileID: 1784253505}
   scriptsToDisable: []
   panelDurationSeconds: 30
-  monster: {fileID: 0}
+  monster: {fileID: 811558453}
   monsterRespawnDelaySeconds: 30
 --- !u!1 &1384648720
 GameObject:
@@ -16234,6 +16258,83 @@ Transform:
   - {fileID: 2092534056}
   m_Father: {fileID: 554544370}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1784253504
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1784253506}
+  - component: {fileID: 1784253505}
+  m_Layer: 0
+  m_Name: QuizManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1784253505
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1784253504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbcd0b5cc7eb88b4cbac3fa09b897c5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  quizPanel: {fileID: 1579722733}
+  questionText: {fileID: 1058985545}
+  answerTexts:
+  - {fileID: 93288642}
+  - {fileID: 1370446475}
+  - {fileID: 642668590}
+  - {fileID: 426048453}
+  questions:
+  - questionText: "Bir \xF6r\xFCmce\u011Fin 8 baca\u011F\u0131 varsa, 3 \xF6r\xFCmce\u011Fin
+      toplam ka\xE7 baca\u011F\u0131 vard\u0131r?"
+    answers:
+    - 16
+    - 24
+    - 32
+    - 12
+    correctAnswerIndex: 1
+  - questionText: "Bir dikd\xF6rtgenin k\u0131sa kenar\u0131 4 cm, uzun kenar\u0131
+      6 cm ise \xE7evresi ka\xE7 cm\u2019dir?"
+    answers:
+    - 20
+    - 16
+    - 24
+    - 12
+    correctAnswerIndex: 2
+  - questionText: "5 \xD7 7 i\u015Fleminin sonucu ka\xE7t\u0131r?"
+    answers:
+    - 35
+    - 57
+    - 25
+    - 30
+    correctAnswerIndex: 0
+  quizActive: 0
+  correctAnswerCount: 0
+--- !u!4 &1784253506
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1784253504}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.11171, y: 4, z: -5.10048}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1811345877
 GameObject:
   m_ObjectHideFlags: 0
@@ -17197,7 +17298,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1865096783}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1784253505}
+        m_TargetAssemblyTypeName: QuizManager, Assembly-CSharp
+        m_MethodName: OnAnswerClicked
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1865096783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17543,7 +17656,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1888362175}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1784253505}
+        m_TargetAssemblyTypeName: QuizManager, Assembly-CSharp
+        m_MethodName: OnAnswerClicked
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 3
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1888362175
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36874,10 +36999,10 @@ MonoBehaviour:
   pulseBridge: {fileID: 392811660}
   gameManager: {fileID: 392811661}
   cooldownSeconds: 40
-  safeZonePanel: {fileID: 0}
+  quizManager: {fileID: 1784253505}
   scriptsToDisable: []
   panelDurationSeconds: 30
-  monster: {fileID: 0}
+  monster: {fileID: 811558453}
   monsterRespawnDelaySeconds: 30
 --- !u!4 &8605961741367673679
 Transform:
@@ -38490,3 +38615,4 @@ SceneRoots:
   - {fileID: 811558458}
   - {fileID: 1021766701}
   - {fileID: 392811662}
+  - {fileID: 1784253506}
