@@ -88,7 +88,20 @@ public class QuizManager : MonoBehaviour
         if (questions.Count == 0)
             return;
 
-        currentQuestionIndex = Random.Range(0, questions.Count);
+        if (questions.Count == 1)
+            currentQuestionIndex = 0;
+        else
+        {
+            int newIndex = Random.Range(0, questions.Count);
+
+            while (newIndex == currentQuestionIndex)
+            {
+                newIndex = Random.Range(0, questions.Count);
+            }
+
+            currentQuestionIndex = newIndex;
+        }
+
         Question q = questions[currentQuestionIndex];
 
         if (questionText != null)
@@ -102,4 +115,5 @@ public class QuizManager : MonoBehaviour
                 answerTexts[i].text = "";
         }
     }
+
 }
