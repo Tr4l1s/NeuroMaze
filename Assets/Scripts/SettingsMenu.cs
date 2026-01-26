@@ -6,6 +6,7 @@ public class SettingsMenu : MonoBehaviour
 {
     [Header("Panels")]
     public GameObject settingsPanel;
+    public GameObject questionPanel;
 
     [Header("Audio")]
     public AudioMixer audioMixer;
@@ -29,6 +30,16 @@ public class SettingsMenu : MonoBehaviour
     public void CloseSettings()
     {
         settingsPanel.SetActive(false);
+    }
+
+    public void OpenQuestion()
+    {
+        questionPanel.SetActive(true);
+    }
+
+    public void CloseQuestion()
+    {
+        questionPanel.SetActive(false);
     }
 
     public void SetVolume(float value)
