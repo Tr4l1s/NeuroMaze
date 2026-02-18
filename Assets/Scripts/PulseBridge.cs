@@ -31,25 +31,19 @@ public class PulseBridge : MonoBehaviour
     }
 #endif
 
-    /// <summary>
-    /// SafeZone veya UI bu fonksiyonu çaðýracak  Swift'te StartPulseMeasurement tetiklenecek.
-    /// </summary>
+
     public void StartPulse()
     {
         StartPulseMeasurement();
     }
 
-    /// <summary>
-    /// Swift tarafýndaki haftalýk ortalama BPM'i çeker.
-    /// </summary>
+
     public int GetWeeklyAverage()
     {
         return GetWeeklyAverageBPM();
     }
 
-    /// <summary>
-    /// Ýstersen Unity'den manuel BPM kaydý yaptýrmak için.
-    /// </summary>
+
     public void AppendManualBpm(int bpm)
     {
         AppendBpmManual(bpm);

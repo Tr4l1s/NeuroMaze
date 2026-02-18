@@ -28,12 +28,12 @@ public class MazeGenerator : MonoBehaviour
         int h = height * 2 + 1;
         maze = new int[w, h];
 
-        // tüm alaný duvarla baþlat
+
         for (int x = 0; x < w; x++)
             for (int y = 0; y < h; y++)
                 maze[x, y] = 1;
 
-        // baþlangýç noktasý
+
         Vector2Int current = new Vector2Int(1, 1);
         maze[current.x, current.y] = 0;
 
@@ -42,7 +42,7 @@ public class MazeGenerator : MonoBehaviour
 
         System.Random rand = new System.Random();
 
-        // DFS algoritmasý
+
         while (stack.Count > 0)
         {
             current = stack.Pop();
@@ -62,7 +62,7 @@ public class MazeGenerator : MonoBehaviour
             }
         }
 
-        // çýkýþ noktasý (sað alt köþe)
+
         maze[w - 2, h - 2] = 0;
     }
 

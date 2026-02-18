@@ -8212,11 +8212,11 @@ MonoBehaviour:
   pulseBridge: {fileID: 1107605815}
   gameManager: {fileID: 1107605813}
   cooldownSeconds: 40
-  quizManager: {fileID: 0}
+  quizManager: {fileID: 860022590}
   scriptsToDisable:
-  - {fileID: 0}
+  - {fileID: 1178830621}
   panelDurationSeconds: 30
-  monster: {fileID: 0}
+  monster: {fileID: 919132147885059653}
   monsterRespawnDelaySeconds: 30
 --- !u!1 &409180918
 GameObject:
@@ -55729,7 +55729,7 @@ MonoBehaviour:
   stopInterval: 10
   stopDuration: 3
   monster: {fileID: 919132147885059653}
-  Spawndelay: 60
+  Spawndelay: 30
   normalSpeed: 3.5
   highStressSpeed: 6
   stressThresholdBpm: 100

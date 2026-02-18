@@ -2,27 +2,25 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 
-
-
 [System.Serializable]
 public class Question
 {
     [TextArea]
-    public string questionText;          // Soru metni
+    public string questionText;
 
-    public string[] answers = new string[4]; // 4 tane þýk (A,B,C,D)
+    public string[] answers = new string[4];
 
-    public int correctAnswerIndex;       // 0,1,2,3 -> hangi þýk doðru
+    public int correctAnswerIndex;
 }
 
 public class QuizManager : MonoBehaviour
 {
     [Header("UI Referanslarý")]
-    public GameObject quizPanel;              // QuizPanel objesi
-    public TextMeshProUGUI questionText;      // QuestionText
-    public TextMeshProUGUI[] answerTexts;     // 4 buton içindeki textler
+    public GameObject quizPanel;
+    public TextMeshProUGUI questionText;
+    public TextMeshProUGUI[] answerTexts;
 
-    [Header("Soru Listesi")]
+    [Header("Soru Listesi (Inspector)")]
     public List<Question> questions = new List<Question>();
 
     [Header("Durum")]
@@ -39,8 +37,11 @@ public class QuizManager : MonoBehaviour
 
     public void StartQuiz()
     {
+        LoadQuestionsFromBank();
+
         if (questions.Count == 0)
         {
+            Debug.LogWarning("QuizManager: Soru yok! (JSON veya Inspector boþ)");
             return;
         }
 
@@ -48,7 +49,7 @@ public class QuizManager : MonoBehaviour
         quizActive = true;
 
         if (quizPanel != null)
-        quizPanel.SetActive(true);
+            quizPanel.SetActive(true);
 
         LoadRandomQuestion();
     }
@@ -116,4 +117,20 @@ public class QuizManager : MonoBehaviour
         }
     }
 
+    private void LoadQuestionsFromBank()
+    {
+        var bank = QuestionBankStorage.Load();
+
+        questions.Clear();
+
+        foreach (var q in bank.questions)
+        {
+            Question newQ = new Question();
+            newQ.questionText = q.questionText;
+            newQ.answers = q.answers;
+            newQ.correctAnswerIndex = q.correctAnswerIndex;
+
+            questions.Add(newQ);
+        }
+    }
 }

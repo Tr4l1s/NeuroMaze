@@ -6676,7 +6676,7 @@ MonoBehaviour:
   stopInterval: 10
   stopDuration: 3
   monster: {fileID: 1793934795}
-  Spawndelay: 60
+  Spawndelay: 30
   normalSpeed: 3.5
   highStressSpeed: 6
   stressThresholdBpm: 100

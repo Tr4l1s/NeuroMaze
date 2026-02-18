@@ -1,121 +1,175 @@
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
+using TMPro;
 
 public class QuestionBankUI : MonoBehaviour
 {
-    [Header("Panel")]
+    [Header("Panels")]
     public GameObject panel;
+    public GameObject mainMenuPanel;
 
-    [Header("Inputs")]
-    public TMP_InputField questionInput;
-    public TMP_InputField aInput;
-    public TMP_InputField bInput;
-    public TMP_InputField cInput;
-    public TMP_InputField dInput;
+    [Header("Inputs (Legacy InputField)")]
+    public InputField questionInput;
+    public InputField aInput;
+    public InputField bInput;
+    public InputField cInput;
+    public InputField dInput;
+
+    [Header("Correct (TMP Dropdown)")]
     public TMP_Dropdown correctDropdown;
 
-    [Header("List UI")]
-    public Transform listContent;           // ScrollView/Viewport/Content
-    public GameObject questionRowPrefab;    // QuestionItemRow prefab
+    [Header("Navigation")]
+    public Scrollbar questionScrollbar;
 
     private QuestionBankData bank;
+    private int currentIndex = -1;
 
     void Start()
     {
         bank = QuestionBankStorage.Load();
+
         if (panel != null) panel.SetActive(false);
+
+        SetupScrollbar();
+        ShowIndex(bank.questions.Count > 0 ? 0 : -1);
     }
 
     public void OpenPanel()
     {
         bank = QuestionBankStorage.Load();
-        if (panel != null) panel.SetActive(true);
-        RefreshList();
-    }
 
-    public void ClosePanel()
-    {
-        if (panel != null) panel.SetActive(false);
+        if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+        if (panel != null) panel.SetActive(true);
+
+        SetupScrollbar();
+        ShowIndex(bank.questions.Count > 0 ? 0 : -1);
     }
 
     public void AddQuestion()
     {
-        if (string.IsNullOrWhiteSpace(questionInput.text)) return;
-        if (string.IsNullOrWhiteSpace(aInput.text)) return;
-        if (string.IsNullOrWhiteSpace(bInput.text)) return;
-        if (string.IsNullOrWhiteSpace(cInput.text)) return;
-        if (string.IsNullOrWhiteSpace(dInput.text)) return;
+        if (bank == null) bank = new QuestionBankData();
 
-        var q = new QuestionData();
-        q.questionText = questionInput.text.Trim();
-        q.answers = new string[4]
+        string qText = questionInput.text.Trim();
+        string A = aInput.text.Trim();
+        string B = bInput.text.Trim();
+        string C = cInput.text.Trim();
+        string D = dInput.text.Trim();
+
+        if (string.IsNullOrWhiteSpace(qText)) return;
+        if (string.IsNullOrWhiteSpace(A) || string.IsNullOrWhiteSpace(B) ||
+            string.IsNullOrWhiteSpace(C) || string.IsNullOrWhiteSpace(D))
+            return;
+
+        var q = new QuestionData
         {
-            aInput.text.Trim(),
-            bInput.text.Trim(),
-            cInput.text.Trim(),
-            dInput.text.Trim()
+            questionText = qText,
+            answers = new string[4] { A, B, C, D },
+            correctAnswerIndex = correctDropdown != null ? correctDropdown.value : 0
         };
-        q.correctAnswerIndex = correctDropdown.value;
 
         bank.questions.Add(q);
 
+        SetupScrollbar();
+        ShowIndex(bank.questions.Count - 1);
+
+        ClearFieldsForNew();
+    }
+
+    public void SaveAndBackToMenu()
+    {
+        if (bank == null) bank = new QuestionBankData();
+
+        if (bank.questions.Count > 0 && currentIndex >= 0 && currentIndex < bank.questions.Count)
+        {
+            WriteFieldsIntoQuestion(bank.questions[currentIndex]);
+        }
+
+        QuestionBankStorage.Save(bank);
+
+        if (panel != null) panel.SetActive(false);
+        if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
+    }
+
+    private void OnScrollbarChanged(float value)
+    {
+        if (bank == null || bank.questions.Count == 0) return;
+
+        int count = bank.questions.Count;
+        int idx = Mathf.RoundToInt(value * (count - 1));
+        ShowIndex(idx);
+    }
+
+    private void SetupScrollbar()
+    {
+        if (questionScrollbar == null) return;
+
+        questionScrollbar.onValueChanged.RemoveListener(OnScrollbarChanged);
+
+        if (bank == null || bank.questions.Count <= 1)
+        {
+            questionScrollbar.numberOfSteps = 0;
+            questionScrollbar.size = 1f;
+            questionScrollbar.SetValueWithoutNotify(0f);
+            questionScrollbar.onValueChanged.AddListener(OnScrollbarChanged);
+            return;
+        }
+
+        int count = bank.questions.Count;
+
+        questionScrollbar.numberOfSteps = count;
+        questionScrollbar.size = Mathf.Clamp01(1f / count);
+        questionScrollbar.onValueChanged.AddListener(OnScrollbarChanged);
+    }
+
+    private void ShowIndex(int idx)
+    {
+        currentIndex = idx;
+
+        if (bank == null || bank.questions.Count == 0 || idx < 0 || idx >= bank.questions.Count)
+        {
+            ClearFieldsForNew();
+            if (questionScrollbar != null) questionScrollbar.SetValueWithoutNotify(0f);
+            return;
+        }
+
+        if (questionScrollbar != null && bank.questions.Count > 1)
+        {
+            float v = (float)idx / (bank.questions.Count - 1);
+            questionScrollbar.SetValueWithoutNotify(v);
+        }
+
+        var q = bank.questions[idx];
+
+        questionInput.text = q.questionText;
+        aInput.text = q.answers[0];
+        bInput.text = q.answers[1];
+        cInput.text = q.answers[2];
+        dInput.text = q.answers[3];
+
+        if (correctDropdown != null)
+            correctDropdown.value = Mathf.Clamp(q.correctAnswerIndex, 0, 3);
+    }
+
+    private void ClearFieldsForNew()
+    {
         questionInput.text = "";
         aInput.text = "";
         bInput.text = "";
         cInput.text = "";
         dInput.text = "";
-        correctDropdown.value = 0;
 
-        RefreshList();
+        if (correctDropdown != null)
+            correctDropdown.value = 0;
     }
 
-    public void SaveQuestions()
+    private void WriteFieldsIntoQuestion(QuestionData q)
     {
-        QuestionBankStorage.Save(bank);
-        Debug.Log("Kaydedildi. Toplam soru: " + bank.questions.Count);
-    }
+        q.questionText = questionInput.text.Trim();
+        q.answers[0] = aInput.text.Trim();
+        q.answers[1] = bInput.text.Trim();
+        q.answers[2] = cInput.text.Trim();
+        q.answers[3] = dInput.text.Trim();
 
-    private void RefreshList()
-    {
-        if (listContent == null || questionRowPrefab == null) return;
-
-        // content temizle
-        for (int i = listContent.childCount - 1; i >= 0; i--)
-            Destroy(listContent.GetChild(i).gameObject);
-
-        // yeniden oluþtur
-        for (int i = 0; i < bank.questions.Count; i++)
-        {
-            int index = i; // closure fix
-            var q = bank.questions[i];
-
-            GameObject row = Instantiate(questionRowPrefab, listContent);
-
-            // Row içinden referanslarý bul
-            // Row’da bir TMP_Text ve bir Button olduðunu varsayýyoruz
-            TMP_Text txt = row.GetComponentInChildren<TMP_Text>();
-            Button btn = row.GetComponentInChildren<Button>();
-
-            if (txt != null)
-                txt.text = $"{index + 1}. {Shorten(q.questionText, 60)}";
-
-            if (btn != null)
-                btn.onClick.AddListener(() => DeleteQuestion(index));
-        }
-    }
-
-    private void DeleteQuestion(int index)
-    {
-        if (index < 0 || index >= bank.questions.Count) return;
-
-        bank.questions.RemoveAt(index);
-        RefreshList();
-    }
-
-    private string Shorten(string s, int max)
-    {
-        if (string.IsNullOrEmpty(s)) return "";
-        return s.Length <= max ? s : s.Substring(0, max) + "...";
+        q.correctAnswerIndex = correctDropdown != null ? correctDropdown.value : 0;
     }
 }

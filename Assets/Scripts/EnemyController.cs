@@ -92,10 +92,10 @@ public class EnemyController : MonoBehaviour
         timer = 0f;
     }
 
-    /// <summary>
+
     /// Swift'ten BPM geldiðinde GameManager burayý çaðýracak.
     /// Nabza göre canavarýn hýzýný ayarlýyoruz.
-    /// </summary>
+  
     public void OnNewBpm(int bpm)
     {
         Debug.Log($"EnemyController: Yeni BPM = {bpm}");
