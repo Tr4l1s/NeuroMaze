@@ -162,6 +162,22 @@ public class QuestionBankUI : MonoBehaviour
             correctDropdown.value = 0;
     }
 
+    public void ClearAllQuestions()
+    {
+        bank = new QuestionBankData();
+
+        QuestionBankStorage.Save(bank);
+
+        currentIndex = -1;
+        ClearFieldsForNew();
+
+        SetupScrollbar();
+        if (questionScrollbar != null)
+            questionScrollbar.SetValueWithoutNotify(0f);
+
+        Debug.Log("Tüm sorular temizlendi.");
+    }
+
     private void WriteFieldsIntoQuestion(QuestionData q)
     {
         q.questionText = questionInput.text.Trim();

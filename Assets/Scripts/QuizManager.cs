@@ -89,33 +89,50 @@ public class QuizManager : MonoBehaviour
         if (questions.Count == 0)
             return;
 
-        if (questions.Count == 1)
-            currentQuestionIndex = 0;
-        else
-        {
-            int newIndex = Random.Range(0, questions.Count);
+        int safety = 50;
 
-            while (newIndex == currentQuestionIndex)
+        while (safety-- > 0)
+        {
+            int newIndex;
+
+            if (questions.Count == 1)
+                newIndex = 0;
+            else
             {
                 newIndex = Random.Range(0, questions.Count);
+                while (newIndex == currentQuestionIndex)
+                    newIndex = Random.Range(0, questions.Count);
             }
 
+            Question candidate = questions[newIndex];
+
+            if (candidate == null) continue;
+            if (string.IsNullOrWhiteSpace(candidate.questionText)) continue;
+            if (candidate.answers == null || candidate.answers.Length < 4) continue;
+
+            bool anyEmpty =
+                string.IsNullOrWhiteSpace(candidate.answers[0]) ||
+                string.IsNullOrWhiteSpace(candidate.answers[1]) ||
+                string.IsNullOrWhiteSpace(candidate.answers[2]) ||
+                string.IsNullOrWhiteSpace(candidate.answers[3]);
+
+            if (anyEmpty) continue;
+
             currentQuestionIndex = newIndex;
+
+            if (questionText != null)
+                questionText.text = candidate.questionText;
+
+            for (int i = 0; i < answerTexts.Length; i++)
+                answerTexts[i].text = (i < candidate.answers.Length) ? candidate.answers[i] : "";
+
+            return;
         }
 
-        Question q = questions[currentQuestionIndex];
-
-        if (questionText != null)
-            questionText.text = q.questionText;
-
-        for (int i = 0; i < answerTexts.Length; i++)
-        {
-            if (i < q.answers.Length)
-                answerTexts[i].text = q.answers[i];
-            else
-                answerTexts[i].text = "";
-        }
+        Debug.LogWarning("QuizManager: Geçerli soru bulunamadý (hepsi boþ/eksik).");
+        EndQuiz();
     }
+
 
     private void LoadQuestionsFromBank()
     {
