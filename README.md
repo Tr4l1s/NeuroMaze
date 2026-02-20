@@ -109,7 +109,7 @@ Proje, teknik altyapısı ve yenilikçi yaklaşımı ile dikkat çekmiştir.
 
 ---
 
-## 🚀 Gelecek Hedefler
+## Hedefler
 
 - Gelişmiş veri analizi ve kayıt sistemi  
 - Eğitim kurumları için lisanslama modeli  
@@ -118,7 +118,7 @@ Proje, teknik altyapısı ve yenilikçi yaklaşımı ile dikkat çekmiştir.
 
 ---
 
-## 📄 Lisans
+## Lisans
 
 Bu proje eğitim ve geliştirme amaçlı hazırlanmıştır.  
 Tüm hakları saklıdır.
