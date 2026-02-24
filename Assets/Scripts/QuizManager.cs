@@ -23,6 +23,9 @@ public class QuizManager : MonoBehaviour
     [Header("Soru Listesi (Inspector)")]
     public List<Question> questions = new List<Question>();
 
+    [Header("Quiz Açýlýnca Gizlenecek UI'lar")]
+    public GameObject[] hideWhenQuizActive;
+
     [Header("Durum")]
     public bool quizActive = false;
     public int correctAnswerCount = 0;
@@ -33,6 +36,8 @@ public class QuizManager : MonoBehaviour
     {
         if (quizPanel != null)
             quizPanel.SetActive(false);
+
+        SetGameplayUIVisible(true);
     }
 
     public void StartQuiz()
@@ -51,6 +56,8 @@ public class QuizManager : MonoBehaviour
         if (quizPanel != null)
             quizPanel.SetActive(true);
 
+        SetGameplayUIVisible(false);
+
         LoadRandomQuestion();
     }
 
@@ -60,6 +67,8 @@ public class QuizManager : MonoBehaviour
 
         if (quizPanel != null)
             quizPanel.SetActive(false);
+
+        SetGameplayUIVisible(true);
 
         Debug.Log("Quiz bitti, doðru sayýsý: " + correctAnswerCount);
     }
@@ -133,7 +142,6 @@ public class QuizManager : MonoBehaviour
         EndQuiz();
     }
 
-
     private void LoadQuestionsFromBank()
     {
         var bank = QuestionBankStorage.Load();
@@ -148,6 +156,17 @@ public class QuizManager : MonoBehaviour
             newQ.correctAnswerIndex = q.correctAnswerIndex;
 
             questions.Add(newQ);
+        }
+    }
+
+    private void SetGameplayUIVisible(bool visible)
+    {
+        if (hideWhenQuizActive == null) return;
+
+        for (int i = 0; i < hideWhenQuizActive.Length; i++)
+        {
+            if (hideWhenQuizActive[i] != null)
+                hideWhenQuizActive[i].SetActive(visible);
         }
     }
 }

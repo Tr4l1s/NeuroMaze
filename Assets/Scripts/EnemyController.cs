@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -23,8 +22,12 @@ public class EnemyController : MonoBehaviour
     public float highStressSpeed = 6f;
     public int stressThresholdBpm = 70;
 
+    [Header("Kaybetme")]
+    public LoseUIController loseUI;
+
     private float timer;
     private bool isStopped = false;
+    private bool hasLost = false;
 
     void Start()
     {
@@ -43,6 +46,8 @@ public class EnemyController : MonoBehaviour
 
     void Update()
     {
+        if (hasLost) return;
+
         timer += Time.deltaTime;
 
         if (!isStopped && timer >= stopInterval)
@@ -54,16 +59,8 @@ public class EnemyController : MonoBehaviour
         {
             agent.SetDestination(target.position);
 
-            if (agent.velocity.magnitude < 0.1f)
-            {
-                if (animator != null)
-                    animator.SetBool("isMoving", false);
-            }
-            else
-            {
-                if (animator != null)
-                    animator.SetBool("isMoving", true);
-            }
+            if (animator != null)
+                animator.SetBool("isMoving", agent.velocity.magnitude >= 0.1f);
         }
     }
 
@@ -85,31 +82,18 @@ public class EnemyController : MonoBehaviour
 
         yield return new WaitForSeconds(stopDuration);
 
-        if (agent != null)
+        if (!hasLost && agent != null)
             agent.isStopped = false;
 
         isStopped = false;
         timer = 0f;
     }
 
-
-    /// Swift'ten BPM geldiðinde GameManager burayý çaðýracak.
-    /// Nabza göre canavarýn hýzýný ayarlýyoruz.
-  
     public void OnNewBpm(int bpm)
     {
-        Debug.Log($"EnemyController: Yeni BPM = {bpm}");
-
         if (agent == null) return;
 
-        if (bpm >= stressThresholdBpm)
-        {
-            agent.speed = highStressSpeed;
-        }
-        else
-        {
-            agent.speed = normalSpeed;
-        }
+        agent.speed = (bpm >= stressThresholdBpm) ? highStressSpeed : normalSpeed;
     }
 
     public void StopChasing()
@@ -117,9 +101,7 @@ public class EnemyController : MonoBehaviour
         isStopped = true;
 
         if (agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh)
-        {
             agent.isStopped = true;
-        }
 
         if (animator != null)
             animator.SetBool("isMoving", false);
@@ -129,9 +111,23 @@ public class EnemyController : MonoBehaviour
     {
         isStopped = false;
 
-        if (agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh)
-        {
+        if (!hasLost && agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh)
             agent.isStopped = false;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (hasLost) return;
+
+        if (other.CompareTag("Player"))
+        {
+            hasLost = true;
+            StopChasing();
+
+            if (loseUI != null)
+                loseUI.ShowLose();
+            else
+                Debug.LogError("EnemyController: loseUI atanmadý! Inspector'dan LoseUIController objesini sürükle.");
         }
     }
 }

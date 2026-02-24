@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.UI;
 
 public class SettingsMenu : MonoBehaviour
 {
@@ -8,45 +6,29 @@ public class SettingsMenu : MonoBehaviour
     public GameObject settingsPanel;
     public GameObject questionPanel;
 
-    [Header("Audio")]
-    public AudioMixer audioMixer;
-    public Slider volumeSlider;
-
     private void Start()
     {
-        if (PlayerPrefs.HasKey("volume"))
-        {
-            float savedVolume = PlayerPrefs.GetFloat("volume");
-            volumeSlider.value = savedVolume;
-            SetVolume(savedVolume);
-        }
+        if (settingsPanel != null) settingsPanel.SetActive(false);
+        if (questionPanel != null) questionPanel.SetActive(false);
     }
 
     public void OpenSettings()
     {
-        settingsPanel.SetActive(true);
+        if (settingsPanel != null) settingsPanel.SetActive(true);
     }
 
     public void CloseSettings()
     {
-        settingsPanel.SetActive(false);
+        if (settingsPanel != null) settingsPanel.SetActive(false);
     }
 
     public void OpenQuestion()
     {
-        questionPanel.SetActive(true);
+        if (questionPanel != null) questionPanel.SetActive(true);
     }
 
     public void CloseQuestion()
     {
-        questionPanel.SetActive(false);
-    }
-
-    public void SetVolume(float value)
-    {
-        float dB = Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20f;
-        audioMixer.SetFloat("MasterVolume", dB);
-
-        PlayerPrefs.SetFloat("volume", value);
+        if (questionPanel != null) questionPanel.SetActive(false);
     }
 }
