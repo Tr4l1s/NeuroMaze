@@ -7686,7 +7686,7 @@ MonoBehaviour:
   stopInterval: 10
   stopDuration: 3
   monster: {fileID: 811558453}
-  Spawndelay: 3
+  Spawndelay: 30
   normalSpeed: 3.5
   highStressSpeed: 6
   stressThresholdBpm: 100
@@ -12758,7 +12758,7 @@ MonoBehaviour:
   - {fileID: 1839759047}
   panelDurationSeconds: 30
   monster: {fileID: 811558453}
-  monsterRespawnDelaySeconds: 30
+  monsterRespawnDelaySeconds: 20
 --- !u!1 &1165731469
 GameObject:
   m_ObjectHideFlags: 0
@@ -12833,7 +12833,7 @@ MonoBehaviour:
   - {fileID: 1839759047}
   panelDurationSeconds: 30
   monster: {fileID: 811558453}
-  monsterRespawnDelaySeconds: 30
+  monsterRespawnDelaySeconds: 20
 --- !u!1 &1168378750
 GameObject:
   m_ObjectHideFlags: 0
@@ -15424,7 +15424,7 @@ MonoBehaviour:
   - {fileID: 1839759047}
   panelDurationSeconds: 30
   monster: {fileID: 811558453}
-  monsterRespawnDelaySeconds: 30
+  monsterRespawnDelaySeconds: 20
 --- !u!1 &1384648720
 GameObject:
   m_ObjectHideFlags: 0
@@ -42223,7 +42223,7 @@ MonoBehaviour:
   - {fileID: 1839759047}
   panelDurationSeconds: 30
   monster: {fileID: 811558453}
-  monsterRespawnDelaySeconds: 30
+  monsterRespawnDelaySeconds: 20
 --- !u!4 &8605961741367673679
 Transform:
   m_ObjectHideFlags: 0

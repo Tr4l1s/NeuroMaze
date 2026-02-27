@@ -44,6 +44,37 @@ public class EnemyController : MonoBehaviour
         }
     }
 
+    void OnEnable()
+    {
+        if (agent == null) agent = GetComponent<NavMeshAgent>();
+        if (animator == null) animator = GetComponent<Animator>();
+
+        if (hasLost) return;
+
+        isStopped = false;
+        timer = 0f;
+
+        if (agent != null && agent.isActiveAndEnabled)
+        {
+            agent.isStopped = false;
+            agent.ResetPath();
+
+            if (target != null && agent.isOnNavMesh)
+                agent.SetDestination(target.position);
+        }
+    }
+
+    void OnDisable()
+    {
+        StopAllCoroutines();
+
+        if (agent != null && agent.isActiveAndEnabled)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
+        }
+    }
+
     void Update()
     {
         if (hasLost) return;
@@ -113,6 +144,9 @@ public class EnemyController : MonoBehaviour
 
         if (!hasLost && agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh)
             agent.isStopped = false;
+
+        if (!hasLost && agent != null && target != null && agent.isOnNavMesh)
+            agent.SetDestination(target.position);
     }
 
     private void OnTriggerEnter(Collider other)
