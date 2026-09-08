@@ -40,6 +40,30 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     private Vector2 input = Vector2.zero;
 
+    public void FitTabletBounds(bool right)
+    {
+        var parentCanvas=GetComponentInParent<Canvas>();
+        if(parentCanvas==null || parentCanvas.renderMode==RenderMode.WorldSpace || background==null || handle==null) return;
+        parentCanvas=parentCanvas.rootCanvas;
+        var rect=GetComponent<RectTransform>();
+        rect.SetParent(parentCanvas.transform,false);
+        canvas=parentCanvas;baseRect=rect;
+        float scale=Mathf.Max(0.01f,parentCanvas.scaleFactor);
+        Rect safe=Screen.safeArea;
+        float diameter=Mathf.Clamp(Mathf.Min(safe.width,safe.height)*0.18f,120,260)/scale;
+        float margin=24/scale;
+        rect.localScale=Vector3.one;
+        rect.anchorMin=rect.anchorMax=rect.pivot=new Vector2(right?1:0,0);
+        rect.sizeDelta=Vector2.one*diameter*1.6f;
+        rect.anchoredPosition=new Vector2(right?-(Screen.width-safe.xMax)/scale-margin:safe.xMin/scale+margin,safe.yMin/scale+margin);
+        background.localScale=Vector3.one;
+        background.anchorMin=background.anchorMax=background.pivot=new Vector2(0.5f,0.5f);
+        background.anchoredPosition=Vector2.zero;background.sizeDelta=Vector2.one*diameter;
+        handle.localScale=Vector3.one;handle.sizeDelta=Vector2.one*diameter*0.5f;
+        handle.anchoredPosition=Vector2.zero;
+        input=Vector2.zero;
+    }
+
     protected virtual void Start()
     {
         HandleRange = handleRange;

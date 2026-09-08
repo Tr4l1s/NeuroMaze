@@ -1,167 +1,78 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
-    [Header("Hedef ve Bileþenler")]
     public Transform target;
-    private NavMeshAgent agent;
-    private Animator animator;
-
-    [Header("Durma Ayarlarý")]
-    public float stopInterval = 10f;
-    public float stopDuration = 3f;
-
-    [Header("Doðma Ayarlarý")]
+    public float stopInterval = 10f, stopDuration = 3f;
     public GameObject monster;
-    public float Spawndelay = 60f;
-
-    [Header("Nabza Göre Hýz Ayarlarý")]
-    public float normalSpeed = 3.5f;
-    public float highStressSpeed = 6f;
+    public float Spawndelay = 30f;
+    public float normalSpeed = 3.5f, highStressSpeed = 6f;
     public int stressThresholdBpm = 70;
-
-    [Header("Kaybetme")]
     public LoseUIController loseUI;
-
-    private float timer;
-    private bool isStopped = false;
-    private bool hasLost = false;
+    NavMeshAgent agent;
+    Animator animator;
+    Renderer[] visuals;
+    Collider[] hitboxes;
+    bool[] visualEnabled, colliderEnabled;
+    bool hasLost, manuallyStopped, visible;
+    float stopTimer, restRemaining;
+    NeuroMaze.Pulse.EnemyEncounterClock clock;
 
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponent<Animator>();
-
-        if (agent != null)
-            agent.speed = normalSpeed;
-
-        if (monster != null)
-        {
-            monster.SetActive(false);
-            Invoke(nameof(ActivateMonster), Spawndelay);
-        }
-    }
-
-    void OnEnable()
-    {
-        if (agent == null) agent = GetComponent<NavMeshAgent>();
-        if (animator == null) animator = GetComponent<Animator>();
-
-        if (hasLost) return;
-
-        isStopped = false;
-        timer = 0f;
-
-        if (agent != null && agent.isActiveAndEnabled)
-        {
-            agent.isStopped = false;
-            agent.ResetPath();
-
-            if (target != null && agent.isOnNavMesh)
-                agent.SetDestination(target.position);
-        }
-    }
-
-    void OnDisable()
-    {
-        StopAllCoroutines();
-
-        if (agent != null && agent.isActiveAndEnabled)
-        {
-            agent.isStopped = true;
-            agent.ResetPath();
-        }
+        var body = monster != null ? monster : gameObject;
+        visuals = body.GetComponentsInChildren<Renderer>(true);
+        hitboxes = body.GetComponentsInChildren<Collider>(true);
+        visualEnabled = new bool[visuals.Length]; colliderEnabled = new bool[hitboxes.Length];
+        for (int i=0;i<visuals.Length;i++) visualEnabled[i]=visuals[i].enabled;
+        for (int i=0;i<hitboxes.Length;i++) colliderEnabled[i]=hitboxes[i].enabled;
+        clock = new NeuroMaze.Pulse.EnemyEncounterClock(Spawndelay);
+        if (agent != null) agent.speed = normalSpeed;
+        // Keep this controller active: deactivating its own GameObject used to break spawn timing.
+        visible = true; ShowBody(false); StopAgent();
     }
 
     void Update()
     {
         if (hasLost) return;
-
-        timer += Time.deltaTime;
-
-        if (!isStopped && timer >= stopInterval)
+        bool previouslySpawned=clock.Spawned;
+        bool canAppear=clock.Advance(Time.deltaTime,SafeZonePulseTrigger.IsPlayerProtected,SafeZonePulseTrigger.LastExitRespawnDelay);
+        if(!canAppear) {ShowBody(false);StopAgent();return;}
+        if(!previouslySpawned) Debug.Log("PULSE_ENEMY_SPAWN");
+        ShowBody(true);
+        if (manuallyStopped) { StopAgent(); return; }
+        if (restRemaining > 0) { restRemaining -= Time.deltaTime; StopAgent(); return; }
+        stopTimer += Time.deltaTime;
+        if (stopInterval > 0 && stopTimer >= stopInterval) { stopTimer=0; restRemaining=stopDuration; StopAgent(); return; }
+        if (CanNavigate())
         {
-            StartCoroutine(StopAndWait());
-        }
-
-        if (!isStopped && agent != null && target != null)
-        {
-            agent.SetDestination(target.position);
-
-            if (animator != null)
-                animator.SetBool("isMoving", agent.velocity.magnitude >= 0.1f);
-        }
-    }
-
-    void ActivateMonster()
-    {
-        if (monster != null)
-            monster.SetActive(true);
-    }
-
-    IEnumerator StopAndWait()
-    {
-        isStopped = true;
-
-        if (agent != null)
-            agent.isStopped = true;
-
-        if (animator != null)
-            animator.SetBool("isMoving", false);
-
-        yield return new WaitForSeconds(stopDuration);
-
-        if (!hasLost && agent != null)
             agent.isStopped = false;
-
-        isStopped = false;
-        timer = 0f;
-    }
-
-    public void OnNewBpm(int bpm)
-    {
-        if (agent == null) return;
-
-        agent.speed = (bpm >= stressThresholdBpm) ? highStressSpeed : normalSpeed;
-    }
-
-    public void StopChasing()
-    {
-        isStopped = true;
-
-        if (agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh)
-            agent.isStopped = true;
-
-        if (animator != null)
-            animator.SetBool("isMoving", false);
-    }
-
-    public void ResumeChasing()
-    {
-        isStopped = false;
-
-        if (!hasLost && agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh)
-            agent.isStopped = false;
-
-        if (!hasLost && agent != null && target != null && agent.isOnNavMesh)
-            agent.SetDestination(target.position);
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (hasLost) return;
-
-        if (other.CompareTag("Player"))
-        {
-            hasLost = true;
-            StopChasing();
-
-            if (loseUI != null)
-                loseUI.ShowLose();
-            else
-                Debug.LogError("EnemyController: loseUI atanmadý! Inspector'dan LoseUIController objesini sürükle.");
+            if (target != null) agent.SetDestination(target.position);
+            if (animator != null) animator.SetBool("isMoving", agent.velocity.sqrMagnitude >= 0.01f);
         }
     }
+
+    bool CanNavigate() { return agent != null && agent.isActiveAndEnabled && agent.isOnNavMesh; }
+    void StopAgent() { if (CanNavigate()) agent.isStopped = true; if (animator != null) animator.SetBool("isMoving", false); }
+    void ShowBody(bool show)
+    {
+        if (visuals == null || visible == show) return;
+        visible=show;
+        for(int i=0;i<visuals.Length;i++) if(visuals[i]!=null) visuals[i].enabled=show && visualEnabled[i];
+        for(int i=0;i<hitboxes.Length;i++) if(hitboxes[i]!=null) hitboxes[i].enabled=show && colliderEnabled[i];
+    }
+    public void StopChasing() { manuallyStopped=true; StopAgent(); }
+    public void ResumeChasing() { manuallyStopped=false; }
+    public void OnNewBpm(int bpm) { if(agent!=null) agent.speed=bpm>=stressThresholdBpm?highStressSpeed:normalSpeed; }
+    void OnTriggerEnter(Collider other)
+    {
+        if (hasLost || clock==null || !clock.Spawned || !visible || SafeZonePulseTrigger.IsPlayerProtected || manuallyStopped || clock.ReturnRemaining>0) return;
+        if (!other.CompareTag("Player")) return;
+        hasLost=true; StopAgent();
+        if(loseUI!=null) loseUI.ShowLose();
+    }
+    void OnDisable() { StopAgent(); }
 }

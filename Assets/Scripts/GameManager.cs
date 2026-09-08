@@ -3,84 +3,44 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Baðlantýlar")]
     public PulseBridge pulseBridge;
     public EnemyController enemy;
-    public TextMeshProUGUI currentBpmText;
-    public TextMeshProUGUI weeklyBpmText;
-    public TextMeshProUGUI measureInfoText;
-
+    public TextMeshProUGUI currentBpmText, weeklyBpmText, measureInfoText;
     public EnvironmentDarkener envDarkener;
-
-    public bool isMeasuring = false;
-
-    private void Awake()
-    {
-        if (pulseBridge == null)
-            pulseBridge = GetComponent<PulseBridge>();
-    }
-
+    public bool isMeasuring;
+    bool hasGameResult;
+    void Awake() { if(pulseBridge==null) pulseBridge=GetComponent<PulseBridge>(); }
     public void OnPulseReceived(string pulseStr)
     {
-        Debug.Log("Swift'ten BPM geldi: " + pulseStr);
-
-        if (!int.TryParse(pulseStr, out int bpm))
-        {
-            Debug.LogWarning("BPM parse edilemedi: " + pulseStr);
-            return;
-        }
-
-        if (currentBpmText != null)
-            currentBpmText.text = $"Anlýk Nabýz: {bpm}";
-
-        if (pulseBridge != null && weeklyBpmText != null)
-        {
-            int weekly = pulseBridge.GetWeeklyAverage();
-            weeklyBpmText.text = $"Haftalýk Ortalama: {weekly}";
-        }
-
-        if (enemy != null)
-        {
-            enemy.OnNewBpm(bpm);
-        }
-
-        if (envDarkener != null)
-            envDarkener.OnNewBpm(bpm);
+        int bpm;
+        if(!int.TryParse(pulseStr,out bpm)) return;
+        if(currentBpmText!=null) currentBpmText.text="AnlÄ±k NabÄ±z: "+bpm;
+        if(pulseBridge!=null && weeklyBpmText!=null) weeklyBpmText.text="HaftalÄ±k Ortalama: "+pulseBridge.GetWeeklyAverage();
+        if(enemy!=null) enemy.OnNewBpm(bpm);
+        if(envDarkener!=null) envDarkener.OnNewBpm(bpm);
     }
-
     public void OnMeasurementStarted()
     {
-        isMeasuring = true;
-
-        if (measureInfoText != null)
-        {
-            measureInfoText.gameObject.SetActive(true);
-            measureInfoText.text = "Nabýz ölçülüyor...\nParmaðýnýzý kameraya tutun!";
-        }
-
-        if (enemy != null)
-        {
-            enemy.StopChasing();
-        }
+        isMeasuring=true; hasGameResult=false;
+        SetGamePulseText("NabÄ±z Ã¶lÃ§Ã¼lÃ¼yorâ€¦\nParmaÄŸÄ±nÄ±zÄ± kameraya tutun ve sorularÄ± cevaplayÄ±n.");
+        if(enemy!=null) enemy.StopChasing();
     }
-
+    public void SetGamePulseText(string value)
+    {
+        if(measureInfoText!=null) {measureInfoText.gameObject.SetActive(true);measureInfoText.text=value;}
+    }
+    public void SetGamePulseResult(string value)
+    {
+        hasGameResult=true;
+        SetGamePulseText(value);
+        if(currentBpmText!=null) currentBpmText.text="GÃ¼venli alan Ã¶lÃ§Ã¼mÃ¼ tamamlandÄ±";
+        if(weeklyBpmText!=null) weeklyBpmText.text="";
+    }
     public void OnMeasurementFinished()
     {
-        isMeasuring = false;
-
-        if (measureInfoText != null)
-            measureInfoText.gameObject.SetActive(false);
-
-        if (enemy != null)
-        {
-            enemy.ResumeChasing();
-        }
+        isMeasuring=false;
+        if(measureInfoText!=null && !hasGameResult) measureInfoText.gameObject.SetActive(false);
+        if(enemy!=null) enemy.ResumeChasing();
     }
-
-
-    public void OnSafeZoneFinishedWithQuiz(int correctAnswers)
-    {
-        Debug.Log("SafeZone bitti, doðru sayýsý: " + correctAnswers);
-
-    }
+    public void OnSafeZoneFinishedWithQuiz(int correctAnswers) { Debug.Log("SafeZone doÄŸru cevap: "+correctAnswers); }
 }

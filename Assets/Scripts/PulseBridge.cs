@@ -4,48 +4,46 @@ using UnityEngine;
 public class PulseBridge : MonoBehaviour
 {
 #if UNITY_IOS && !UNITY_EDITOR
-    [DllImport("__Internal")]
-    private static extern void StartPulseMeasurement();
-
-    [DllImport("__Internal")]
-    private static extern int GetWeeklyAverageBPM();
-
-    [DllImport("__Internal")]
-    private static extern void AppendBpmManual(int value);
-#else
-    // Editor veya iOS dýþý platformlar için stub:
-    private static void StartPulseMeasurement()
-    {
-        Debug.Log("StartPulseMeasurement (Editor Stub): Gerçek ölçüm sadece iOS cihazda çalýþýr.");
-    }
-
-    private static int GetWeeklyAverageBPM()
-    {
-        Debug.Log("GetWeeklyAverageBPM (Editor Stub): Cihazda gerçek deðer döner.");
-        return 0;
-    }
-
-    private static void AppendBpmManual(int value)
-    {
-        Debug.Log("AppendBpmManual (Editor Stub): Cihazda UserDefaults'a kaydedilir.");
-    }
+    [DllImport("__Internal")] private static extern void StartPulseMeasurement();
+    [DllImport("__Internal")] private static extern int GetWeeklyAverageBPM();
+    [DllImport("__Internal")] private static extern void AppendBpmManual(int value);
 #endif
-
 
     public void StartPulse()
     {
+#if UNITY_IOS && !UNITY_EDITOR
         StartPulseMeasurement();
+#elif UNITY_ANDROID || UNITY_EDITOR
+        var study = NeuroMaze.Pulse.AndroidPulseStudy.Instance;
+        if (study != null)
+        {
+            study.EnsureGameSession();
+            var capture = study.GetComponent<NeuroMaze.Pulse.GamePulseMeasurement>();
+            if (capture == null) capture = study.gameObject.AddComponent<NeuroMaze.Pulse.GamePulseMeasurement>();
+            capture.Begin(FindFirstObjectByType<GameManager>(), FindFirstObjectByType<QuizManager>(), "safe_zone", 30f);
+        }
+#else
+        Debug.Log("Bu platformda kamera nabÄ±z Ã¶lÃ§Ã¼mÃ¼ desteklenmiyor.");
+#endif
     }
-
 
     public int GetWeeklyAverage()
     {
+#if UNITY_IOS && !UNITY_EDITOR
         return GetWeeklyAverageBPM();
+#else
+        // Android research records use explicit session/phase summaries in the study
+        // panel. Never present mixed participants as a weekly average.
+        return 0;
+#endif
     }
-
 
     public void AppendManualBpm(int bpm)
     {
+#if UNITY_IOS && !UNITY_EDITOR
         AppendBpmManual(bpm);
+#else
+        Debug.LogWarning("Android Ã§alÄ±ÅŸma kayÄ±tlarÄ±na kaynaksÄ±z manuel BPM eklenmez.");
+#endif
     }
 }

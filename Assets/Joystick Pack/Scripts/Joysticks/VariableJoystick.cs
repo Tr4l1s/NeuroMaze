@@ -11,6 +11,12 @@ public class VariableJoystick : Joystick
     [SerializeField] private JoystickType joystickType = JoystickType.Fixed;
 
     private Vector2 fixedPosition = Vector2.zero;
+    public void FitTablet(bool right)
+    {
+        FitTabletBounds(right);
+        fixedPosition=Vector2.zero;
+        SetMode(JoystickType.Fixed);
+    }
 
     public void SetMode(JoystickType joystickType)
     {

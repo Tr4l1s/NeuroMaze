@@ -186,7 +186,7 @@ Material:
     - _Anisotropy: 0
     - _Blend: 16
     - _BlendMode: 0
-    - _Brightness: 0.36
+    - _Brightness: 2
     - _BumpScale: 1
     - _CoatMask: 0
     - _CullMode: 2
@@ -298,7 +298,7 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
-    - _Color: {r: 0.23899364, g: 0.23899364, b: 0.23899364, a: 1}
+    - _Color: {r: 0.6289307, g: 0.6289307, b: 0.6289307, a: 1}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}

@@ -5,168 +5,58 @@ using System.Collections.Generic;
 [System.Serializable]
 public class Question
 {
-    [TextArea]
-    public string questionText;
-
-    public string[] answers = new string[4];
-
+    [TextArea] public string questionText;
+    public string[] answers=new string[4];
     public int correctAnswerIndex;
 }
-
 public class QuizManager : MonoBehaviour
 {
-    [Header("UI Referanslarý")]
     public GameObject quizPanel;
     public TextMeshProUGUI questionText;
     public TextMeshProUGUI[] answerTexts;
-
-    [Header("Soru Listesi (Inspector)")]
-    public List<Question> questions = new List<Question>();
-
-    [Header("Quiz Açýlýnca Gizlenecek UI'lar")]
+    public List<Question> questions=new List<Question>();
     public GameObject[] hideWhenQuizActive;
-
-    [Header("Durum")]
-    public bool quizActive = false;
-    public int correctAnswerCount = 0;
-
-    private int currentQuestionIndex = -1;
-
-    void Start()
-    {
-        if (quizPanel != null)
-            quizPanel.SetActive(false);
-
-        SetGameplayUIVisible(true);
-    }
-
+    public bool quizActive;
+    public int correctAnswerCount;
+    int currentQuestionIndex=-1;
+    void Start() {if(quizPanel!=null) quizPanel.SetActive(false);SetGameplayUIVisible(true);}
     public void StartQuiz()
     {
-        LoadQuestionsFromBank();
-
-        if (questions.Count == 0)
+        var bank=QuestionBankStorage.Load();
+        if(bank!=null && bank.questions!=null && bank.questions.Count>0)
         {
-            Debug.LogWarning("QuizManager: Soru yok! (JSON veya Inspector boþ)");
-            return;
+            questions.Clear();
+            foreach(var q in bank.questions) questions.Add(new Question {questionText=q.questionText,answers=q.answers,correctAnswerIndex=q.correctAnswerIndex});
         }
-
-        correctAnswerCount = 0;
-        quizActive = true;
-
-        if (quizPanel != null)
-            quizPanel.SetActive(true);
-
-        SetGameplayUIVisible(false);
-
-        LoadRandomQuestion();
+        questions.RemoveAll(q=>q==null || string.IsNullOrWhiteSpace(q.questionText) || q.answers==null || q.answers.Length<4 ||
+            q.correctAnswerIndex<0 || q.correctAnswerIndex>3 || System.Array.Exists(q.answers,a=>string.IsNullOrWhiteSpace(a)));
+        if(questions.Count==0)
+        {
+            questions.Add(new Question {questionText="3 + 4 kaÃ§ eder?",answers=new[]{"5","6","7","8"},correctAnswerIndex=2});
+            questions.Add(new Question {questionText="10 - 3 kaÃ§ eder?",answers=new[]{"7","6","8","9"},correctAnswerIndex=0});
+            questions.Add(new Question {questionText="2, 4, 6, ? SÄ±radaki sayÄ± nedir?",answers=new[]{"7","8","9","10"},correctAnswerIndex=1});
+        }
+        correctAnswerCount=0;currentQuestionIndex=-1;quizActive=true;
+        if(quizPanel!=null) quizPanel.SetActive(true);
+        SetGameplayUIVisible(false);LoadRandomQuestion();
     }
-
-    public void EndQuiz()
-    {
-        quizActive = false;
-
-        if (quizPanel != null)
-            quizPanel.SetActive(false);
-
-        SetGameplayUIVisible(true);
-
-        Debug.Log("Quiz bitti, doðru sayýsý: " + correctAnswerCount);
-    }
-
+    public void EndQuiz() {quizActive=false;if(quizPanel!=null) quizPanel.SetActive(false);SetGameplayUIVisible(true);}
     public void OnAnswerClicked(int answerIndex)
     {
-        if (!quizActive || currentQuestionIndex < 0)
-            return;
-
-        Question q = questions[currentQuestionIndex];
-
-        if (answerIndex == q.correctAnswerIndex)
-        {
-            correctAnswerCount++;
-            Debug.Log("DOÐRU! Toplam doðru: " + correctAnswerCount);
-        }
-        else
-        {
-            Debug.Log("YANLIÞ!");
-        }
-
+        if(!quizActive || currentQuestionIndex<0 || answerIndex<0 || answerIndex>3) return;
+        if(answerIndex==questions[currentQuestionIndex].correctAnswerIndex) correctAnswerCount++;
         LoadRandomQuestion();
     }
-
-    private void LoadRandomQuestion()
+    void LoadRandomQuestion()
     {
-        if (questions.Count == 0)
-            return;
-
-        int safety = 50;
-
-        while (safety-- > 0)
-        {
-            int newIndex;
-
-            if (questions.Count == 1)
-                newIndex = 0;
-            else
-            {
-                newIndex = Random.Range(0, questions.Count);
-                while (newIndex == currentQuestionIndex)
-                    newIndex = Random.Range(0, questions.Count);
-            }
-
-            Question candidate = questions[newIndex];
-
-            if (candidate == null) continue;
-            if (string.IsNullOrWhiteSpace(candidate.questionText)) continue;
-            if (candidate.answers == null || candidate.answers.Length < 4) continue;
-
-            bool anyEmpty =
-                string.IsNullOrWhiteSpace(candidate.answers[0]) ||
-                string.IsNullOrWhiteSpace(candidate.answers[1]) ||
-                string.IsNullOrWhiteSpace(candidate.answers[2]) ||
-                string.IsNullOrWhiteSpace(candidate.answers[3]);
-
-            if (anyEmpty) continue;
-
-            currentQuestionIndex = newIndex;
-
-            if (questionText != null)
-                questionText.text = candidate.questionText;
-
-            for (int i = 0; i < answerTexts.Length; i++)
-                answerTexts[i].text = (i < candidate.answers.Length) ? candidate.answers[i] : "";
-
-            return;
-        }
-
-        Debug.LogWarning("QuizManager: Geçerli soru bulunamadý (hepsi boþ/eksik).");
-        EndQuiz();
+        int next=questions.Count==1?0:Random.Range(0,questions.Count);
+        if(questions.Count>1 && next==currentQuestionIndex) next=(next+1)%questions.Count;
+        currentQuestionIndex=next;var q=questions[next];
+        if(questionText!=null) questionText.text=q.questionText;
+        if(answerTexts!=null) for(int i=0;i<answerTexts.Length;i++) if(answerTexts[i]!=null) answerTexts[i].text=i<q.answers.Length?q.answers[i]:"";
     }
-
-    private void LoadQuestionsFromBank()
+    void SetGameplayUIVisible(bool visible)
     {
-        var bank = QuestionBankStorage.Load();
-
-        questions.Clear();
-
-        foreach (var q in bank.questions)
-        {
-            Question newQ = new Question();
-            newQ.questionText = q.questionText;
-            newQ.answers = q.answers;
-            newQ.correctAnswerIndex = q.correctAnswerIndex;
-
-            questions.Add(newQ);
-        }
-    }
-
-    private void SetGameplayUIVisible(bool visible)
-    {
-        if (hideWhenQuizActive == null) return;
-
-        for (int i = 0; i < hideWhenQuizActive.Length; i++)
-        {
-            if (hideWhenQuizActive[i] != null)
-                hideWhenQuizActive[i].SetActive(visible);
-        }
+        if(hideWhenQuizActive!=null) foreach(var item in hideWhenQuizActive) if(item!=null) item.SetActive(visible);
     }
 }
